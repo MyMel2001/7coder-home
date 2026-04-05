@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7coder</title>
+    <title>7coder - Full Clean-Room Claude Code Replacement</title>
     <style>
         * {
             margin: 0;
@@ -11,201 +11,653 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 0 20px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        h1 {
-            font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #7f8c8d;
-            margin-bottom: 20px;
-        }
-
-        .badge {
-            display: inline-block;
-            background: #27ae60;
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .content {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero .tagline {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero .version {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero .badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
             margin-bottom: 30px;
+            text-align: center;
+            color: var(--dark);
         }
 
-        .content h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.5rem;
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            margin: 15px auto 0;
+            border-radius: 2px;
         }
 
-        .content p {
-            margin-bottom: 15px;
-            color: #555;
+        /* Requirements Box */
+        .requirements-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
         }
 
-        .features {
+        .requirements-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .requirement-item {
+            text-align: center;
+            padding: 25px;
+            background: var(--light);
+            border-radius: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .requirement-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .requirement-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .requirement-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .requirement-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Tools Section */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 4px solid var(--primary);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .tool-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .tool-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tool-card li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .tool-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Permission Modes */
+        .modes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .mode-card.default { border-color: var(--primary); }
+        .mode-card.auto { border-color: var(--success); }
+        .mode-card.bypass { border-color: var(--warning); }
+        .mode-card.denial { border-color: var(--danger); }
+
+        .mode-card:hover {
+            transform: scale(1.05);
+        }
+
+        .mode-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .mode-card .mode-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .mode-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* Killer Features */
+        .killer-features {
+            background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
+            color: white;
+        }
+
+        .killer-features .section-title {
+            color: white;
+        }
+
+        .killer-features .section-title::after {
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+        }
+
+        .killer-features .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .killer-features .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .killer-features .feature-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .killer-features .feature-card h3 {
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .killer-features .feature-card p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        /* Compatibility */
+        .compatibility {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .compatibility-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
         }
 
-        .feature-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #667eea;
+        .compatibility-table th,
+        .compatibility-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--light);
         }
 
-        .feature-card h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
+        .compatibility-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
         }
 
-        .feature-card p {
+        .compatibility-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Why Section */
+        .why-section {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .why-section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            color: var(--dark);
+        }
+
+        .why-section p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 25px;
+        }
+
+        .why-section .quote {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin: 30px 0;
+        }
+
+        .why-section .credit {
             font-size: 0.95rem;
-            color: #666;
+            color: var(--gray);
+            font-style: italic;
         }
 
-        .cta-button {
-            display: block;
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 18px 30px;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-        }
-
+        /* Footer */
         footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 20px;
             text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #7f8c8d;
-            font-size: 0.9rem;
         }
 
+        footer p {
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive */
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
+            .hero h1 {
+                font-size: 2.2rem;
             }
-            .logo {
-                font-size: 2rem;
+
+            .hero .tagline {
+                font-size: 1.1rem;
             }
-            h1 {
-                font-size: 1.5rem;
+
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
             }
         }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">⚡ 7Coder</div>
-            <h1>Windows 7 Compatible AI Coding Assistant</h1>
-            <p class="subtitle">A modern AI-powered coding assistant built on Node.js v13, optimized for legacy systems</p>
-            <span class="badge">🔥 Node.js v13 | Windows 7 Ready | AI-Powered</span>
-        </header>
-
-        <div class="content">
-            <h2>🤖 About This Project</h2>
-            <p>
-                Welcome to <strong>7Coder</strong> - a powerful and free AI coding assistant 
-                designed specifically for Windows 7 and other legacy systems. Built on Node.js v13, this project brings 
-                modern AI capabilities to environments that are still widely used in enterprise and development settings.
-            </p>
-            <p>
-                Whether you're maintaining legacy codebases, working in resource-constrained environments, or simply 
-                prefer the stability of older systems, this AI assistant helps you write, debug, and optimize code 
-                in a similar manner to Claude Code - all while maintaining full compatibility with your existing setup.
-            </p>
-            <p>
-                <strong>Why Choose This Alternative?</strong>
-            </p>
-            <ul>
-                <li>✅ <strong>Windows 7 Compatible</strong> - Runs smoothly on legacy systems</li>
-                <li>✅ <strong>Node.js v13 Based</strong> - Lightweight and stable</li>
-                <li>✅ <strong>AI-Powered</strong> - Smart code suggestions and completions</li>
-                <li>✅ <strong>Privacy-Focused</strong> - Local-first processing options</li>
-            </ul>
-        </div>
-
-        <div class="features">
-            <div class="feature-card">
-                <h3>🎯 Key Features</h3>
-                <p>Basic Claude-Code-like features but in older systems.</p>
-            </div>
-            <div class="feature-card">
-                <h3>🔧 System Requirements</h3>
-                <p>Windows 7 SP1+, Node.js v13.x, 2GB RAM minimum, 500MB free disk space. Runs on older hardware efficiently.</p>
-            </div>
-            <div class="feature-card">
-                <h3>🛠️ Tech Stack</h3>
-                <p>Node.js v13, Javascript, Axios, and dotenv. Built for performance and compatibility.</p>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <div class="animate">
+                <h1>7coder</h1>
+                <p class="tagline">Full clean-room Claude Code replacement for Windows 7 / Node.js 13+</p>
+                <div class="version">
+                    v2.1.0
+                    <span class="badge">★ 100% Functional Tools</span>
+                </div>
             </div>
         </div>
+    </header>
 
-        <a href="https://github.com/MyMel2001/7coder" class="cta-button" target="_blank" rel="noopener noreferrer">
-            🚀 Learn More on GitHub
-        </a>
+    <!-- System Requirements -->
+    <section class="container">
+        <div class="requirements-box animate delay-1">
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <div class="requirement-icon">💻</div>
+                    <div class="requirement-title">OS</div>
+                    <div class="requirement-desc">Windows 7 SP1+, Win 10/11, macOS, Linux</div>
+                </div>
+                <div class="requirement-item">
+                    <div class="requirement-icon">⚡</div>
+                    <div class="requirement-title">Node.js</div>
+                    <div class="requirement-desc">v13.14.0 or higher</div>
+                </div>
+                <div class="requirement-item">
+                    <div class="requirement-icon">🔌</div>
+                    <div class="requirement-title">API</div>
+                    <div class="requirement-desc">Any OpenAI-compatible API</div>
+                </div>
+                <div class="requirement-item">
+                    <div class="requirement-icon">🚀</div>
+                    <div class="requirement-title">Features</div>
+                    <div class="requirement-desc">100% functional tools</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <footer>
-            <p>&copy; Sammy Lord. All rights reserved.</p>
-            <p>Built with ❤️ for developers on Windows 7 and beyond</p>
-        </footer>
-    </div>
+    <!-- Tools Section -->
+    <section class="container">
+        <h2 class="section-title">How Tools Work</h2>
+        <div class="tools-grid">
+            <div class="tool-card animate delay-2">
+                <h3>📠 Chat</h3>
+                <ul>
+                    <li>Full Chat</li>
+                    <li>Chat History</li>
+                    <li>Chat Preview</li>
+                    <li>Chat Settings</li>
+                </ul>
+            </div>
+            <div class="tool-card animate delay-2">
+                <h3>📊 Graphs</h3>
+                <ul>
+                    <li>Code Graph</li>
+                    <li>Git Graph</li>
+                    <li>Markdown Graph</li>
+                    <li>JSON Graph</li>
+                </ul>
+            </div>
+            <div class="tool-card animate delay-2">
+                <h3>📝 Text</h3>
+                <ul>
+                    <li>Text Editor</li>
+                    <li>Markdown Editor</li>
+                    <li>JSON Editor</li>
+                    <li>Code Editor</li>
+                </ul>
+            </div>
+            <div class="tool-card animate delay-2">
+                <h3>📁 Files</h3>
+                <ul>
+                    <li>File Manager</li>
+                    <li>File Explorer</li>
+                    <li>File Preview</li>
+                    <li>File Search</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Permission Modes -->
+    <section class="container">
+        <h2 class="section-title">Permission & Security System</h2>
+        <div class="modes-container">
+            <div class="mode-card default animate delay-3">
+                <div class="mode-icon">🟢</div>
+                <h4>Default</h4>
+                <p>Standard secure permissions</p>
+            </div>
+            <div class="mode-card auto animate delay-3">
+                <div class="mode-icon">🟡</div>
+                <h4>Auto</h4>
+                <p>Intelligent auto-detection</p>
+            </div>
+            <div class="mode-card bypass animate delay-3">
+                <div class="mode-icon">🟠</div>
+                <h4>Bypass</h4>
+                <p>Temporary permission override</p>
+            </div>
+            <div class="mode-card denial animate delay-3">
+                <div class="mode-icon">🔴</div>
+                <h4>Denial</h4>
+                <p>Strict security lockdown</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Computer Use -->
+    <section class="container">
+        <h2 class="section-title">🖥️ Computer Use Feature</h2>
+        <div class="requirements-box animate delay-4">
+            <p style="font-size: 1.1rem; color: var(--gray); text-align: center; margin-bottom: 30px;">
+                7coder's Computer Use feature lets the AI agent interact with your system, 
+                automate tasks, and execute commands directly.
+            </p>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>🎯 Smart Detection</h3>
+                    <p style="color: var(--gray);">Intelligently detects when to use computer controls</p>
+                </div>
+                <div class="tool-card">
+                    <h3>⚙️ Configurable</h3>
+                    <p style="color: var(--gray);">Adjust sensitivity and behavior in settings</p>
+                </div>
+                <div class="tool-card">
+                    <h3>🔐 Secure</h3>
+                    <p style="color: var(--gray);">Clear confirmation prompts before actions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Killer Features -->
+    <section class="killer-features">
+        <div class="container">
+            <h2 class="section-title">Other Killer Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔍 Context-Aware</h3>
+                    <p>Understands your codebase and project structure</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 Multi-Model</h3>
+                    <p>Works with OpenAI, Groq, local LLMs, and more - any OpenAI-compatible endpoint can be used</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 Customizable UI</h3>
+                    <p>Dark mode, themes, and personalization options</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 API Integration</h3>
+                    <p>Connects with your favorite AI providers</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💾 Local Storage</h3>
+                    <p>Save chats, settings, and preferences locally</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 Fast & Responsive</h3>
+                    <p>Optimized for smooth, real-time interactions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compatibility -->
+    <section class="container">
+        <h2 class="section-title">Compatibility</h2>
+        <div class="compatibility animate">
+            <table class="compatibility-table">
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Supported</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Windows 7 SP1+</td>
+                        <td>✅</td>
+                        <td>Full support (v7.0 minimum)</td>
+                    </tr>
+                    <tr>
+                        <td>Windows 10/11</td>
+                        <td>✅</td>
+                        <td>Optimized experience</td>
+                    </tr>
+                    <tr>
+                        <td>macOS</td>
+                        <td>✅</td>
+                        <td>Native support</td>
+                    </tr>
+                    <tr>
+                        <td>Linux</td>
+                        <td>✅</td>
+                        <td>Full support via Node.js</td>
+                    </tr>
+                    <tr>
+                        <td>Browser</td>
+                        <td>✅</td>
+                        <td>Web-based interface</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="container">
+        <div class="why-section animate">
+            <h2>Why 7coder?</h2>
+            <p>Because real Claude Code is expensive and doesn't run on Windows 7.</p>
+            <p>This is the <strong>free, broad-compatibility, semi-open</strong> version that delivers almost everything Claude Code does — with better security controls and zero closed-source code.</p>
+            <div class="quote">
+                "Vibe-coded with love (and a lot of Windows 7 debugging) by NodeMixaholic."
+            </div>
+            <p class="credit">Enjoy my hard work.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© Sammy Lord</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">
+                Built for developers, by developers. | Full Clean-Room Claude Code Replacement
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
